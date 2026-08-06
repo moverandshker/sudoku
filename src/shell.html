@@ -1,0 +1,212 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+<meta charset="utf-8">
+<title>Sudoku</title>
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, viewport-fit=cover, user-scalable=no">
+<meta name="theme-color" content="#0e1013">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="Sudoku">
+<meta name="referrer" content="no-referrer">
+<meta name="robots" content="noindex, nofollow">
+<link rel="apple-touch-icon" href="__ICON__">
+<link rel="icon" href="__ICON__">
+<link id="manifest" rel="manifest">
+<style>__CSS__</style>
+</head>
+<body>
+
+<div id="app">
+  <div class="topbar">
+    <button class="iconbtn" id="btnMenu" aria-label="Menu">
+      <svg viewBox="0 0 24 24"><path d="M4 7h16M4 12h16M4 17h16"/></svg>
+    </button>
+    <div class="meta">
+      <div class="band" id="mBand">Sudoku</div>
+      <div class="sub" id="mSub">&nbsp;</div>
+    </div>
+    <div class="spacer"></div>
+    <div class="timer" id="mTimer">0:00</div>
+    <button class="iconbtn" id="btnPause" aria-label="Pause"><svg viewBox="0 0 24 24" id="pauseIcon"></svg></button>
+    <button class="iconbtn" id="btnStats" aria-label="Statistics">
+      <svg viewBox="0 0 24 24"><path d="M4 20V10M10 20V4M16 20v-7M22 20H2"/></svg>
+    </button>
+  </div>
+
+  <div class="boardwrap">
+    <div style="position:relative;width:min(100%,calc(100dvh - 300px),460px);aspect-ratio:1">
+      <div class="board" id="board"></div>
+      <div class="paused-overlay hide" id="pausedOverlay">Paused — tap to resume</div>
+    </div>
+  </div>
+
+  <div class="controls">
+    <div class="toolrow">
+      <button class="tool" id="btnUndo"><svg viewBox="0 0 24 24"><path d="M9 14L4 9l5-5"/><path d="M4 9h11a5 5 0 0 1 0 10h-3"/></svg>Undo</button>
+      <button class="tool" id="btnErase"><svg viewBox="0 0 24 24"><path d="M20 20H8.5L3 14.5a2 2 0 0 1 0-2.8l7.7-7.7a2 2 0 0 1 2.8 0l6.5 6.5a2 2 0 0 1 0 2.8L13 20"/></svg>Erase</button>
+      <button class="tool" id="btnNotes"><svg viewBox="0 0 24 24"><path d="M12 20h9"/><path d="M16.5 3.5a2.1 2.1 0 0 1 3 3L7 19l-4 1 1-4z"/></svg>Notes</button>
+      <button class="tool" id="btnHint"><svg viewBox="0 0 24 24"><path d="M9 18h6M10 22h4"/><path d="M12 2a6 6 0 0 0-3.6 10.8c.6.5 1.1 1.4 1.2 2.2h4.8c.1-.8.6-1.7 1.2-2.2A6 6 0 0 0 12 2z"/></svg>Hint</button>
+    </div>
+    <div class="keypad" id="keypad"></div>
+  </div>
+</div>
+
+<!-- ============ menu ============ -->
+<div class="sheet" id="sheetMenu">
+  <header>
+    <h2>Menu</h2>
+    <button class="iconbtn" id="closeMenu" aria-label="Close"><svg viewBox="0 0 24 24"><path d="M18 6L6 18M6 6l12 12"/></svg></button>
+  </header>
+  <div class="body">
+    <div class="group">
+      <h3>New puzzle</h3>
+      <div class="row" style="flex-direction:column;align-items:stretch;gap:9px">
+        <div class="seg" id="bandPick" style="flex-wrap:wrap">
+          <button data-v="gentle">Gentle</button>
+          <button data-v="steady">Steady</button>
+          <button data-v="tough">Tough</button>
+          <button data-v="fiendish">Fiendish</button>
+        </div>
+        <div style="font-size:11.5px;color:var(--muted);line-height:1.45">
+          Gentle needs only singles. Steady adds locked candidates and pairs. Tough needs triples,
+          X-wings and XY-wings. Fiendish needs XYZ-wings, swordfish or colouring.
+          Every puzzle is graded by the techniques required to solve it and only released if its
+          score lands inside a narrow window — so your times are comparable within a band.
+        </div>
+      </div>
+    </div>
+    <button class="bigbtn" id="btnStart">Start new puzzle</button>
+    <button class="bigbtn ghost" id="btnResume">Back to current puzzle</button>
+
+    <div class="group">
+      <h3>Board</h3>
+      <div class="row tappable"><div class="label">Highlight row, column and box<small>Shades every square that shares a unit with the selected one. Off by default.</small></div><div class="switch" id="swPeers"></div></div>
+      <div class="row tappable"><div class="label">Highlight matching digits<small>Shades other squares holding the same number as the selected one.</small></div><div class="switch" id="swSame"></div></div>
+      <div class="row tappable"><div class="label">Emphasise digit in notes<small>Bolds the selected digit wherever it appears in pencil marks.</small></div><div class="switch" id="swNoteHi"></div></div>
+      <div class="row"><div class="label">Show mistakes<small>Conflicts flags repeats in a row, column or box. Against solution flags any wrong digit immediately.</small></div></div>
+      <div class="row"><div class="seg" id="segMistakes" style="flex:1"><button data-v="off">Off</button><button data-v="conflicts">Conflicts</button><button data-v="solution">Solution</button></div></div>
+    </div>
+
+    <div class="group">
+      <h3>Assistance</h3>
+      <div class="row tappable"><div class="label">Auto candidate marks<small>Fills every square's pencil marks for you and keeps them current. Disables hand-written notes.</small></div><div class="switch" id="swAutoC"></div></div>
+      <div class="row tappable"><div class="label">Clear notes when placing<small>Placing a digit removes it from the pencil marks of its row, column and box.</small></div><div class="switch" id="swClearNotes"></div></div>
+    </div>
+
+    <div class="group">
+      <h3>Session</h3>
+      <div class="row tappable"><div class="label">Show timer<small>The clock keeps running either way — this only hides the display.</small></div><div class="switch" id="swTimer"></div></div>
+      <div class="row tappable"><div class="label">Pause when app is hidden<small>Stops the clock when you switch away, so an interruption doesn't skew the log.</small></div><div class="switch" id="swAutoPause"></div></div>
+      <div class="row tappable"><div class="label">Haptics<small>Short buzz on a wrong digit and on completion.</small></div><div class="switch" id="swHaptics"></div></div>
+      <div class="row tappable"><div class="label">Ask how it felt after a solve<small>One tap, 1–5. Stored with the solve and exported alongside it.</small></div><div class="switch" id="swCheckin"></div></div>
+      <div class="row tappable"><div class="label">Symmetric clue layout<small>Rotationally symmetric givens. Turning this off widens the pool of puzzles slightly.</small></div><div class="switch" id="swSym"></div></div>
+    </div>
+
+    <div class="group">
+      <h3>Appearance</h3>
+      <div class="row"><div class="seg" id="segTheme" style="flex:1"><button data-v="auto">Auto</button><button data-v="dark">Dark</button><button data-v="light">Light</button></div></div>
+    </div>
+
+    <div class="group">
+      <h3>About</h3>
+      <div class="row"><div class="label" style="font-size:12.5px;line-height:1.5;color:var(--muted)">
+        This app makes no network requests of any kind. There is no analytics, no crash reporting,
+        no remote config, no fonts or scripts loaded from anywhere. Puzzles are generated on your
+        device; your history is stored in this browser's local storage and nowhere else.
+        Delete the app or clear site data and it is gone. Export your log any time from Stats.
+      </div></div>
+    </div>
+  </div>
+</div>
+
+<!-- ============ stats ============ -->
+<div class="sheet" id="sheetStats">
+  <header>
+    <h2>Progress</h2>
+    <button class="iconbtn" id="closeStats" aria-label="Close"><svg viewBox="0 0 24 24"><path d="M18 6L6 18M6 6l12 12"/></svg></button>
+  </header>
+  <div class="body">
+    <div class="cards">
+      <div class="card"><div class="v" id="sTotal">0</div><div class="k">SOLVED</div></div>
+      <div class="card"><div class="v" id="sStreak">0</div><div class="k">DAY STREAK</div></div>
+      <div class="card"><div class="v" id="sToday">0</div><div class="k">TODAY</div></div>
+    </div>
+
+    <div class="seg" id="chartPick" style="margin-bottom:10px">
+      <button data-v="all" class="on">Pace</button>
+      <button data-v="gentle">Gentle</button>
+      <button data-v="steady">Steady</button>
+      <button data-v="tough">Tough</button>
+      <button data-v="fiendish">Fiendish</button>
+    </div>
+    <div class="chartbox">
+      <div id="chart"></div>
+      <div class="chart-note" id="chartNote"></div>
+    </div>
+
+    <div class="group"><table class="stats" id="statTable"></table></div>
+
+    <div class="group">
+      <h3>Recent solves</h3>
+      <div class="log" id="log"></div>
+    </div>
+
+    <div class="group">
+      <h3>Your data</h3>
+      <div class="row" style="flex-direction:column;align-items:stretch;gap:9px">
+        <div class="seg">
+          <button id="btnCSV">Export CSV</button>
+          <button id="btnJSON">Export JSON</button>
+          <button id="btnCopy">Copy</button>
+          <button id="btnImport">Import</button>
+        </div>
+        <textarea class="exportbox hide" id="exportBox" spellcheck="false" placeholder="Exported data appears here. Paste a JSON export in and tap Import to merge it."></textarea>
+        <div style="font-size:11.5px;color:var(--muted);line-height:1.45">
+          CSV columns include the difficulty score and pace (seconds per point), so a spreadsheet
+          can compare sessions across bands. Import merges by timestamp and never duplicates.
+        </div>
+      </div>
+    </div>
+    <button class="bigbtn ghost" id="btnWipe" style="color:var(--bad)">Erase all history</button>
+  </div>
+</div>
+
+<!-- ============ result ============ -->
+<div class="modal" id="modalDone">
+  <div class="panel">
+    <h2>Solved</h2>
+    <div class="lead" id="rLead"></div>
+    <div class="resultgrid">
+      <div><div class="v" id="rTime">—</div><div class="k">TIME</div></div>
+      <div><div class="v" id="rPace">—</div><div class="k">PER DIFFICULTY POINT</div></div>
+      <div><div class="v" id="rErr">0</div><div class="k">WRONG ENTRIES</div></div>
+      <div><div class="v" id="rHint">0</div><div class="k">HINTS</div></div>
+    </div>
+    <div class="lead" id="rBest" style="margin-top:-8px"></div>
+    <div id="checkinBlock">
+      <div class="lead" style="margin-bottom:8px">How did that feel?</div>
+      <div class="rating" id="rating">
+        <button data-v="1">1</button><button data-v="2">2</button><button data-v="3">3</button><button data-v="4">4</button><button data-v="5">5</button>
+      </div>
+      <div class="rating-labels"><span>foggy</span><span>sharp</span></div>
+    </div>
+    <button class="bigbtn" id="doneNew">Another one</button>
+    <button class="bigbtn ghost" id="doneStats">See progress</button>
+  </div>
+</div>
+
+<div class="modal" id="modalBusy">
+  <div class="panel" style="text-align:center;max-width:260px">
+    <div class="spinner"></div>
+    <div style="font-size:13.5px;color:var(--muted)">Building a puzzle in that band…</div>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script id="engine-src">__ENGINE__</script>
+<script>__APP__</script>
+</body>
+</html>

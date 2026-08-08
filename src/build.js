@@ -1,10 +1,19 @@
 const fs = require('fs');
 const p = f => fs.readFileSync(__dirname + '/' + f, 'utf8');
 
+// One stamp per build: shown in the About section and used as the SW cache name,
+// so the version visible in the app identifies the exact cached build.
+const now = new Date();
+const token = now.getTime().toString(36);
+const pad = n => String(n).padStart(2, '0');
+const stamp = now.getFullYear() + '-' + pad(now.getMonth() + 1) + '-' + pad(now.getDate()) +
+  ' ' + pad(now.getHours()) + ':' + pad(now.getMinutes());
+
 let html = p('shell.html')
   .replace('__CSS__', () => p('styles.css'))
   .replace('__ENGINE__', () => p('engine.js'))
-  .replace('__APP__', () => p('app.js'));
+  .replace('__APP__', () => p('app.js'))
+  .replace('__BUILD__', () => stamp + ' · ' + token);
 const icon = 'data:image/png;base64,' + fs.readFileSync(__dirname + '/../icon180.png').toString('base64');
 html = html.split('__ICON__').join(icon);
 
@@ -13,7 +22,7 @@ fs.writeFileSync(__dirname + '/dist/index.html', html);
 // service worker — cache-first, so it works with the network off (or absent)
 const sw = `/* Sudoku offline cache. Nothing here talks to a server other than to fetch
    this app's own two files from wherever you hosted it. */
-const CACHE = 'sudoku-v${Date.now().toString(36)}';
+const CACHE = 'sudoku-v${token}';
 const ASSETS = ['./', './index.html'];
 self.addEventListener('install', e => {
   self.skipWaiting();

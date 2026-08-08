@@ -1,6 +1,6 @@
 /* Sudoku offline cache. Nothing here talks to a server other than to fetch
    this app's own two files from wherever you hosted it. */
-const CACHE = 'sudoku-vmsi28he0';
+const CACHE = 'sudoku-vmsl0bahz';
 const ASSETS = ['./', './index.html'];
 self.addEventListener('install', e => {
   self.skipWaiting();

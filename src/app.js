@@ -535,15 +535,15 @@
     for (let k = 0; k <= 3; k++) {
       const v = lo + (hi - lo) * k / 3, yy = y(v);
       svg += '<line x1="' + PL + '" x2="' + (W - PR) + '" y1="' + yy.toFixed(1) + '" y2="' + yy.toFixed(1) + '" stroke="var(--line)" stroke-width="1"/>';
-      svg += '<text x="' + (PL - 6) + '" y="' + (yy + 3.5).toFixed(1) + '" text-anchor="end" font-size="9" fill="var(--muted)">' + fmtY(v) + '</text>';
+      svg += '<text x="' + (PL - 6) + '" y="' + (yy + 3.5).toFixed(1) + '" text-anchor="end" font-size="10" fill="var(--muted)">' + fmtY(v) + '</text>';
     }
     svg += '<polyline fill="none" stroke="#f2a65a" stroke-width="1.8" stroke-linejoin="round" points="' +
       roll.map((v, i) => x(i).toFixed(1) + ',' + y(v).toFixed(1)).join(' ') + '"/>';
     vals.forEach((v, i) => { svg += '<circle cx="' + x(i).toFixed(1) + '" cy="' + y(v).toFixed(1) + '" r="2.6" fill="var(--accent)"/>'; });
     const d0 = new Date(data[0].ts), d1 = new Date(data[data.length - 1].ts);
     const dl = d => d.toLocaleDateString(undefined, { month: 'short', day: 'numeric' });
-    svg += '<text x="' + PL + '" y="' + (H - 5) + '" font-size="9" fill="var(--muted)">' + dl(d0) + '</text>';
-    svg += '<text x="' + (W - PR) + '" y="' + (H - 5) + '" font-size="9" fill="var(--muted)" text-anchor="end">' + dl(d1) + '</text>';
+    svg += '<text x="' + PL + '" y="' + (H - 5) + '" font-size="10" fill="var(--muted)">' + dl(d0) + '</text>';
+    svg += '<text x="' + (W - PR) + '" y="' + (H - 5) + '" font-size="10" fill="var(--muted)" text-anchor="end">' + dl(d1) + '</text>';
     svg += '</svg>';
     box.innerHTML = svg;
 

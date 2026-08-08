@@ -36,7 +36,7 @@
   </div>
 
   <div class="boardwrap">
-    <div style="position:relative;width:min(100%,calc(100dvh - 300px),460px);aspect-ratio:1">
+    <div style="position:relative;width:min(100%,calc(100dvh - 300px),460px);aspect-ratio:1;container-type:inline-size">
       <div class="board" id="board"></div>
       <div class="paused-overlay hide" id="pausedOverlay">Paused — tap to resume</div>
     </div>
@@ -69,7 +69,7 @@
           <button data-v="tough">Tough</button>
           <button data-v="fiendish">Fiendish</button>
         </div>
-        <div style="font-size:11.5px;color:var(--muted);line-height:1.45">
+        <div style="font-size:12.5px;color:var(--muted);line-height:1.45">
           Gentle needs only singles. Steady adds locked candidates and pairs. Tough needs triples,
           X-wings and XY-wings. Fiendish needs XYZ-wings, swordfish or colouring.
           Every puzzle is graded by the techniques required to solve it and only released if its
@@ -111,7 +111,7 @@
 
     <div class="group">
       <h3>About</h3>
-      <div class="row"><div class="label" style="font-size:12.5px;line-height:1.5;color:var(--muted)">
+      <div class="row"><div class="label" style="font-size:13.5px;line-height:1.5;color:var(--muted)">
         This app makes no network requests of any kind. There is no analytics, no crash reporting,
         no remote config, no fonts or scripts loaded from anywhere. Puzzles are generated on your
         device; your history is stored in this browser's local storage and nowhere else.
@@ -163,7 +163,7 @@
           <button id="btnImport">Import</button>
         </div>
         <textarea class="exportbox hide" id="exportBox" spellcheck="false" placeholder="Exported data appears here. Paste a JSON export in and tap Import to merge it."></textarea>
-        <div style="font-size:11.5px;color:var(--muted);line-height:1.45">
+        <div style="font-size:12.5px;color:var(--muted);line-height:1.45">
           CSV columns include the difficulty score and pace (seconds per point), so a spreadsheet
           can compare sessions across bands. Import merges by timestamp and never duplicates.
         </div>
@@ -200,7 +200,7 @@
 <div class="modal" id="modalBusy">
   <div class="panel" style="text-align:center;max-width:260px">
     <div class="spinner"></div>
-    <div style="font-size:13.5px;color:var(--muted)">Building a puzzle in that band…</div>
+    <div style="font-size:14.5px;color:var(--muted)">Building a puzzle in that band…</div>
   </div>
 </div>
 
